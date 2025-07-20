@@ -1,5 +1,5 @@
-const owner = 'YOUR_GITHUB_USERNAME';
-const repo = 'futuristic-doc-search';
+const owner = import.meta.env.VITE_GITHUB_OWNER;
+const repo = import.meta.env.VITE_GITHUB_REPO;
 const path = 'docs';
 
 export async function fetchDocuments() {
