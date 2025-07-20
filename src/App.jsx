@@ -9,42 +9,34 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log('App mounted, fetching documents...'); // Debug log
+    
     fetchDocuments()
       .then(data => {
-        console.log('Fetched documents:', data); // Debug log
+        console.log('Successfully fetched documents:', data);
         setDocs(data);
         setFiltered(data);
-        setLoading(false);
+        setError(null);
       })
       .catch(err => {
         console.error('Failed to fetch documents:', err);
         setError(err.message);
+      })
+      .finally(() => {
         setLoading(false);
       });
   }, []);
 
   useEffect(() => {
     const q = query.toLowerCase();
-    setFiltered(
-      docs.filter(doc =>
-        doc.name.toLowerCase().includes(q)
-      )
+    const filteredDocs = docs.filter(doc =>
+      doc.name.toLowerCase().includes(q)
     );
+    console.log(`Filtering with query "${q}":`, filteredDocs);
+    setFiltered(filteredDocs);
   }, [query, docs]);
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background text-text p-6 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl text-accent mb-4">Error Loading Documents</h1>
-          <p className="text-text">{error}</p>
-          <p className="text-secondary mt-4">
-            Make sure you have a 'docs' folder with files in your repository.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  console.log('App render - loading:', loading, 'error:', error, 'docs:', docs.length);
 
   return (
     <div className="min-h-screen bg-background text-text p-6">
@@ -65,17 +57,52 @@ function App() {
         />
       </div>
       
+      {/* Debug Info - Remove this after fixing */}
+      <div className="max-w-4xl mx-auto mb-6 p-4 bg-gray-800 rounded text-xs">
+        <p><strong>Debug Info:</strong></p>
+        <p>Loading: {loading ? 'Yes' : 'No'}</p>
+        <p>Error: {error || 'None'}</p>
+        <p>Documents loaded: {docs.length}</p>
+        <p>Filtered documents: {filtered.length}</p>
+        <p>Search query: "{query}"</p>
+      </div>
+      
       {loading ? (
         <div className="text-center">
-          <p className="text-secondary">Loading documents...</p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <p className="text-secondary mt-2">Loading documents...</p>
+        </div>
+      ) : error ? (
+        <div className="text-center max-w-2xl mx-auto">
+          <div className="p-6 bg-red-900/20 border border-red-500 rounded-lg">
+            <h2 className="text-xl text-red-400 mb-4">Error Loading Documents</h2>
+            <p className="text-red-300 mb-4">{error}</p>
+            <details className="text-left">
+              <summary className="cursor-pointer text-red-400">Troubleshooting Steps</summary>
+              <ul className="mt-2 text-sm text-red-200 list-disc list-inside">
+                <li>Make sure you have a 'docs' folder in your repository</li>
+                <li>Add some sample files to the docs folder</li>
+                <li>Check that the repository is public or the API can access it</li>
+                <li>Open browser console (F12) to see detailed error messages</li>
+              </ul>
+            </details>
+          </div>
         </div>
       ) : filtered.length === 0 && query === '' ? (
         <div className="text-center">
-          <p className="text-secondary">No documents found in the repository.</p>
-          <p className="text-text mt-2">Add some files to the 'docs' folder in your GitHub repo.</p>
+          <p className="text-secondary text-lg mb-2">No documents found</p>
+          <p className="text-text">Add some files to the 'docs' folder in your GitHub repository</p>
         </div>
       ) : filtered.length === 0 ? (
-        <p className="text-accent text-center">No matches found for "{query}"</p>
+        <div className="text-center">
+          <p className="text-accent text-lg">No matches found for "{query}"</p>
+          <button 
+            onClick={() => setQuery('')}
+            className="mt-2 px-4 py-2 bg-primary text-background rounded hover:bg-secondary transition"
+          >
+            Clear Search
+          </button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map(doc => (
@@ -83,13 +110,17 @@ function App() {
               key={doc.id}
               className="p-5 rounded-xl bg-card/50 backdrop-blur-md border border-border hover:border-primary shadow-md hover:shadow-primary transition duration-300"
             >
-              <div className="flex justify-between items-center mb-2">
-                <p className="text-xl font-semibold text-primary truncate">{doc.name}</p>
-                <span className="text-xs px-2 py-1 rounded-full bg-accent/30 text-accent shrink-0 ml-2">
+              <div className="flex justify-between items-start mb-2">
+                <p className="text-lg font-semibold text-primary truncate pr-2" title={doc.name}>
+                  {doc.name}
+                </p>
+                <span className="text-xs px-2 py-1 rounded-full bg-accent/30 text-accent shrink-0">
                   {doc.type}
                 </span>
               </div>
-              <p className="text-sm text-text mb-4">Size: {doc.size} bytes</p>
+              <p className="text-sm text-text mb-4">
+                Size: {(doc.size / 1024).toFixed(1)} KB
+              </p>
               <a
                 href={doc.downloadUrl}
                 target="_blank"
