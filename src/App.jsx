@@ -9,7 +9,7 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log('App mounted, fetching documents...'); // Debug log
+    console.log('App mounted, fetching documents...');
     
     fetchDocuments()
       .then(data => {
