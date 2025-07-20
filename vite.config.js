@@ -3,5 +3,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/futuristic-doc-search/', // ← must match your repo name exactly
+  base: '/futuristic-doc-search/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+  },
 });
