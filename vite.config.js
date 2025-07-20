@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/futuristic-doc-search/', // ← Match your repo name exactly
+  base: '/futuristic-doc-search/', // 👈 MUST match your repo name
 });
