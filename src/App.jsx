@@ -3,14 +3,26 @@ import { fetchDocuments } from './githubApi.js';
 
 function App() {
   const [docs, setDocs] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDocuments().then(data => {
       setDocs(data);
+      setFiltered(data);
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    const q = query.toLowerCase();
+    setFiltered(
+      docs.filter(doc =>
+        doc.name.toLowerCase().includes(q)
+      )
+    );
+  }, [query, docs]);
 
   return (
     <div className="min-h-screen bg-background text-text p-6">
@@ -21,13 +33,23 @@ function App() {
         <p className="text-secondary mt-2">Powered by GitHub ✨</p>
       </header>
 
+      <div className="max-w-xl mx-auto mb-12">
+        <input
+          type="text"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Search documents..."
+          className="w-full px-5 py-3 rounded-xl bg-card/60 backdrop-blur-md border-2 border-primary focus:outline-none focus:ring-2 focus:ring-accent text-white placeholder-text shadow-inner transition duration-300"
+        />
+      </div>
+
       {loading ? (
         <p className="text-secondary text-center">Loading documents...</p>
-      ) : docs.length === 0 ? (
-        <p className="text-accent text-center">No documents found in /docs folder.</p>
+      ) : filtered.length === 0 ? (
+        <p className="text-accent text-center">No matches found for “{query}”</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {docs.map(doc => (
+          {filtered.map(doc => (
             <div
               key={doc.id}
               className="p-5 rounded-xl bg-card/50 backdrop-blur-md border border-border hover:border-primary shadow-md hover:shadow-primary transition duration-300"
