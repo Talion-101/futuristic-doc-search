@@ -5,11 +5,11 @@ const path = 'docs';
 export async function fetchDocuments() {
   const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
   
-  console.log('Fetching from:', url); // Debug log
+  console.log('Fetching from:', url);
   
   try {
     const res = await fetch(url);
-    console.log('Response status:', res.status); // Debug log
+    console.log('Response status:', res.status);
     
     if (!res.ok) {
       const errorText = await res.text();
@@ -18,7 +18,7 @@ export async function fetchDocuments() {
     }
     
     const data = await res.json();
-    console.log('Raw GitHub API response:', data); // Debug log
+    console.log('Raw GitHub API response:', data);
     
     // Handle both single file and array responses
     const files = Array.isArray(data) ? data : [data];
@@ -36,12 +36,12 @@ export async function fetchDocuments() {
         sha: file.sha,
       }));
     
-    console.log('Processed documents:', documents); // Debug log
+    console.log('Processed documents:', documents);
     return documents;
     
   } catch (err) {
     console.error('Error fetching documents:', err);
-    throw err; // Re-throw to handle in component
+    throw err;
   }
 }
 
