@@ -14,34 +14,42 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-text p-6">
-      <h1 className="text-4xl font-bold text-primary mb-4">
-        Futuristic Document Search
-      </h1>
+      <header className="text-center mb-10">
+        <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
+          ⚡ Futuristic Document Search
+        </h1>
+        <p className="text-secondary mt-2">Powered by GitHub ✨</p>
+      </header>
 
       {loading ? (
-        <p className="text-secondary">Loading documents...</p>
+        <p className="text-secondary text-center">Loading documents...</p>
       ) : docs.length === 0 ? (
-        <p className="text-accent">No documents found in /docs folder.</p>
+        <p className="text-accent text-center">No documents found in /docs folder.</p>
       ) : (
-        <ul className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {docs.map(doc => (
-            <li
+            <div
               key={doc.id}
-              className="bg-card p-4 rounded-lg border border-border hover:border-primary transition duration-200"
+              className="p-5 rounded-xl bg-card/50 backdrop-blur-md border border-border hover:border-primary shadow-md hover:shadow-primary transition duration-300"
             >
-              <p className="text-xl font-semibold">{doc.name}</p>
-              <p className="text-sm text-secondary">Type: {doc.type}</p>
+              <div className="flex justify-between items-center mb-2">
+                <p className="text-xl font-semibold text-primary">{doc.name}</p>
+                <span className="text-xs px-2 py-1 rounded-full bg-accent/30 text-accent">
+                  {doc.type}
+                </span>
+              </div>
+              <p className="text-sm text-text mb-4">Size: {doc.size} bytes</p>
               <a
                 href={doc.downloadUrl}
-                className="text-primary underline hover:text-accent"
                 target="_blank"
                 rel="noopener noreferrer"
+                className="inline-block px-4 py-2 text-sm font-medium rounded-md bg-primary text-background hover:bg-secondary hover:text-white transition duration-300"
               >
-                Download
+                ⬇️ Download
               </a>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
